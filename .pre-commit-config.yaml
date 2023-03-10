@@ -28,5 +28,5 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
-        args: ['--config=setup.cfg', '--ignore=W605,W503,I001,I005']
+        args: ['--config=setup.cfg', '--ignore=W605,W503,I001,I005, E501']
         additional_dependencies: [flake8-isort]

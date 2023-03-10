@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -28,13 +29,24 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
-class VideoGameSerializer(serializers.HyperlinkedModelSerializer):
+class LoginUserSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Invalid Details.")
+
+
+class VideoGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = VideoGame
         fields = "__all__"
 
 
-class ReviewSerializer(serializers.HyperlinkedModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = "__all__"

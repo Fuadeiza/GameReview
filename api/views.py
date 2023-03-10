@@ -1,12 +1,11 @@
-from django.contrib.auth import login
 from knox.models import AuthToken
-from knox.views import LoginView as KnoxLoginView
 from rest_framework import generics, permissions, viewsets
-from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 
 from .models import Review, VideoGame
 from .serializers import (
+    LoginUserSerializer,
     RegisterSerializer,
     ReviewSerializer,
     UserSerializer,
@@ -33,24 +32,53 @@ class RegisterAPI(generics.GenericAPIView):
         )
 
 
-class LoginAPI(KnoxLoginView):
-    permission_classes = (permissions.AllowAny,)
+# class LoginAPI(KnoxLoginView):
+#     authentication_classes = [BasicAuthentication]
+#     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
+#     def post(self, request, format=None):
+#         serializer = AuthTokenSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data["user"]
+#         login(request, user)
+#         return super(LoginAPI, self).post(request, format=None)
+
+
+class LoginAPI(generics.GenericAPIView):
+    serializer_class = LoginUserSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data["user"]
-        login(request, user)
-        return super(LoginAPI, self).post(request, format=None)
+        user = serializer.validated_data
+        return Response(
+            {
+                "user": UserSerializer(
+                    user, context=self.get_serializer_context()
+                ).data,
+                "token": AuthToken.objects.create(user)[1],
+            }
+        )
+
+
+class UserAPI(generics.RetrieveAPIView):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
 
 
 class VideoGameList(viewsets.ModelViewSet):
     serializer_class = VideoGameSerializer
     queryset = VideoGame.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    parser_classes = (FormParser, MultiPartParser)
 
 
 class ReviewList(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]

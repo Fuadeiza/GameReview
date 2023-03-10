@@ -21,7 +21,7 @@ class Review(models.Model):
         default=0, validators=[MaxValueValidator(5), MinValueValidator(0)]
     )
     comment = models.TextField(blank=True, null=True)
-    location = models.CharField(max_length=100)
+    location = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.video_game
