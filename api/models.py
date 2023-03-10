@@ -1,19 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
 
-class User(models.Model):
-    username = models.CharField(max_length=20, unique=True)
-    email = models.EmailField()
-
-    def __str__(self) -> str:
-        return self.username
 
 class VideoGame(models.Model):
     name= models.CharField(max_length=120)
     image = models.ImageField(upload_to='uploads/')
+    # created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.name
@@ -30,4 +26,4 @@ class Review(models.Model):
 
 
     def __str__(self) -> str:
-        return self.user
+        return self.video_game
