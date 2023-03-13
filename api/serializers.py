@@ -49,4 +49,13 @@ class VideoGameSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = "__all__"
+        fields = ["comment", "star_rating", "location", "video_game", "user"]
+        # read_only_fields = ('user',)
+
+    # def create(self, validated_data):
+    #     print(validated_data)
+    #     print(validated_data["user"].id)
+    #     return Review.objects.create(**validated_data)
+    #     # import pudb;
+    #     # pudb.set_trace()
+    #     # return super().create(validated_data)

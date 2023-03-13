@@ -32,18 +32,6 @@ class RegisterAPI(generics.GenericAPIView):
         )
 
 
-# class LoginAPI(KnoxLoginView):
-#     authentication_classes = [BasicAuthentication]
-#     permission_classes = (permissions.AllowAny,)
-
-#     def post(self, request, format=None):
-#         serializer = AuthTokenSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data["user"]
-#         login(request, user)
-#         return super(LoginAPI, self).post(request, format=None)
-
-
 class LoginAPI(generics.GenericAPIView):
     serializer_class = LoginUserSerializer
 
@@ -79,6 +67,10 @@ class VideoGameList(viewsets.ModelViewSet):
 
 
 class ReviewList(viewsets.ModelViewSet):
+
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        return serializer.save(user=self.request.user)

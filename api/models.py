@@ -15,7 +15,7 @@ class VideoGame(models.Model):
 
 
 class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_constraint=False)
     video_game = models.ForeignKey(VideoGame, on_delete=models.CASCADE)
     star_rating = models.IntegerField(
         default=0, validators=[MaxValueValidator(5), MinValueValidator(0)]
@@ -24,4 +24,4 @@ class Review(models.Model):
     location = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self) -> str:
-        return self.video_game
+        return str(self.video_game)
